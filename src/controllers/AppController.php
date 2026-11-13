@@ -6,6 +6,22 @@ namespace App\Controller;
 
 abstract class AppController
 {
+    protected function isGet(): bool {
+        return ($_SERVER['REQUEST_METHOD'] ?? '') === 'GET';
+    }
+    protected function isPost(): bool {
+        return ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST';
+    }
+    protected function isPut(): bool {
+        return ($_SERVER['REQUEST_METHOD'] ?? '') === 'PUT';
+    }
+    protected function isDelete(): bool {
+        return ($_SERVER['REQUEST_METHOD'] ?? '') === 'DELETE';
+    }
+    protected function redirect(string $url, int $code = 0): void {
+        header('Location: '. $url, true, $code);
+        die();
+    }
     protected function render(string $template, array $variables = []): void
     {
         $viewsPath = dirname(__DIR__, 2) . '/public/views';
