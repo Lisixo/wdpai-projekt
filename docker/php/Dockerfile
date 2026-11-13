@@ -16,6 +16,7 @@ RUN apk add --no-cache \
         libpng-dev \
         libjpeg-turbo-dev \
         postgresql-dev \
+        linux-headers \
         $PHPIZE_DEPS \
     && docker-php-ext-configure gd --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" \
@@ -25,6 +26,8 @@ RUN apk add --no-cache \
         bcmath \
         pgsql \
         pdo_pgsql \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug \
     && apk del .build-deps
 
 RUN { \
@@ -33,5 +36,14 @@ RUN { \
       echo 'post_max_size = 512M'; \
       echo 'max_file_uploads = 20'; \
     } > /usr/local/etc/php/conf.d/mealplanner.ini
+
+RUN { \
+      echo 'xdebug.mode = develop,debug'; \
+      echo 'xdebug.start_with_request = yes'; \
+      echo 'xdebug.client_host = host.docker.internal'; \
+      echo 'xdebug.client_port = 9003'; \
+      echo 'xdebug.log = /tmp/xdebug.log'; \
+      echo 'xdebug.log_level = 0'; \
+    } > /usr/local/etc/php/conf.d/xdebug.ini
 
 COPY . .
